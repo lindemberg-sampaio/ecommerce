@@ -14,7 +14,7 @@
 			switch ($method) {
 
 				case "get":
-					return $this->values[$fieldName];
+					return (isset($this->values[$fieldName])) ? $this->values[$fieldName] : NULL; // se ao executar o get+NomeCampo não foi encontrado, retorna NULL
 					break;
 				
 				case "set":
