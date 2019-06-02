@@ -221,8 +221,7 @@
 
 			if ($results[0] === 0) {
 
-				//throw new \Exception("Não foi possível recuperar a senha.");
-				throw new \Exception("Não achei o bendito usuário, não!");
+				throw new \Exception("Não foi possível recuperar a senha.");
 				
 			}
 			else {

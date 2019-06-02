@@ -332,6 +332,25 @@
 
 	});
 
+
+
+	$app->get("/categories/:idcategory", function($idcategory) { // rota de CATEGORIAS
+
+		$category = new Category();
+
+		$category->get((int)$idcategory);
+
+		$page = new Page();
+		
+		$page->setTpl("category", [
+			'category'=>$category->getValues(),
+			'products'=>[]
+		]);
+
+	});
+
+
+
 	$app->run();
 
  ?>
