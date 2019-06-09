@@ -11,6 +11,7 @@
 
 	$app->config('debug', true);
 
+	require_once("functions.php");
 	require_once("road/site.php");
 	require_once("road/admin.php");
 	require_once("road/admin-categories.php");
