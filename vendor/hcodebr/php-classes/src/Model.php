@@ -8,8 +8,8 @@
 
 		public function __call($name, $args)
 		{
-			$method = substr($name, 0, 3); // set ou get
-			$fieldName = substr($name, 3, strlen($name)); // nome do campo chamado (ex: em 'setusuario' $fieldName = 'usuario'
+			$method = substr($name, 0, 3);
+			$fieldName = substr($name, 3, strlen($name));
 
 			switch ($method) {
 
@@ -28,7 +28,7 @@
 		{
 			foreach ($data as $key => $value) {
 				// o uso de chaves abaixo possibilita fazer a concatenação e utilizar como comando
-				$this->{"set" . $key}($value);
+				$this->{"set" . $key}($value); // é o mesmo que usar setidusuario(1)
 			}
 		}
 
