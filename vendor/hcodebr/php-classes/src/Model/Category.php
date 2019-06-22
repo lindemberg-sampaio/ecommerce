@@ -121,12 +121,12 @@
 							INNER JOIN tb_productscategories b ON a.idproduct = b.idproduct
 							INNER JOIN tb_categories c ON c.idcategory = b.idcategory
 							WHERE c.idcategory = :idcategory
-							LIMIT $start, $itemsPerPage
+							LIMIT $start, $itemsPerPage;
 			", [
 				':idcategory'=>$this->getidcategory()
 			]);
 
-			$resultTotal = $sql->select("SELECT FOUND_ROWS() AS nrtotal");
+			$resultTotal = $sql->select("SELECT FOUND_ROWS() AS nrtotal;");
 
 			return [
 				'data'=>Product::checkList($results),
