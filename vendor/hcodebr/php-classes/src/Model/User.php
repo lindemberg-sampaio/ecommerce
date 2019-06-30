@@ -11,6 +11,52 @@
 		const SESSION = "User";
 		const SECRET = "HcodePhp7_Secret"; // tem que ter ao menos 16 caracteres
 
+		public static function getFromSession()
+		{
+			$user = new User();
+
+			if (isset($_SESSION[User::SESSION]) && (int)$_SESSION[User::SESSION]['iduser'] > 0){
+
+				$user->setData($_SESSION[User::SESSION]);
+				
+			}
+
+			return $user;
+		}
+
+
+		public static function checkLogin($inadmin = true)
+		{
+
+			if (
+				!isset($_SESSION[User::SESSION]) // se não foi definida esta session com a constante session, ou se ela não existir
+				||
+				!$_SESSION[User::SESSION]  // se foi definida, mas está vazia ou perdeu o valor
+				||
+				!(int)$_SESSION[User::SESSION]["iduser"] > 0 // se o id do usuário NÃO for maior do que 0 (se for >0, realmente é um usuário)
+			) {
+				// não está logado
+				return false;
+
+			} else {
+
+				if ($inadmin === true && (bool)$_SESSION[User::SESSION]['inadmin'] === true) {
+
+					return true;
+
+				} else if ($inadmin === false) {
+
+					return true;
+
+				} else {
+
+					return false;
+				}
+
+			}
+
+		}
+
 		public static function login($login, $password)
 		{
 			$sql = new Sql();
@@ -45,23 +91,11 @@
 
 		public static function verifyLogin($inadmin = true) // aula 104 - 30min
 		{
-			if ( // etapas a serem verificadas
+			if (User::checkLogin($inadmin))	{
 
-				!isset($_SESSION[User::SESSION])
-				// se não foi definida esta session com a constante session, ou se ela não existir
-				||
-				!$_SESSION[User::SESSION]
-				// se foi definida, mas está vazia ou perdeu o valor
-				||
-				!(int)$_SESSION[User::SESSION]["iduser"] > 0
-				// se o id do usuário NÃO for maior do que 0 (se for >0, realmente é um usuário)
-				||
-				(bool)$_SESSION[User::SESSION]["inadmin"] !== $inadmin
-				// para verificar se o usuário é um usuário da administração
-			)
-			{
 				header("Location: /admin/login"); // se não foi definida, redireciona para a tela de autenticação
 				exit;
+				
 			}
 		}
 
