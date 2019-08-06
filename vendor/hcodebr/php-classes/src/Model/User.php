@@ -35,14 +35,14 @@
 				||
 				!(int)$_SESSION[User::SESSION]["iduser"] > 0 // se o id do usuário NÃO for maior do que 0 (se for >0, realmente é um usuário)
 			) {
-				// não está logado
-				return false;
+				
+				return false; // não está logado
 
 			} else {
 
 				if ($inadmin === true && (bool)$_SESSION[User::SESSION]['inadmin'] === true) {
 
-					return true;
+					return true; // ele é um administrador
 
 				} else if ($inadmin === false) {
 
@@ -59,6 +59,7 @@
 
 		public static function login($login, $password)
 		{
+
 			$sql = new Sql();
 
 			$results = $sql->select("SELECT * FROM tb_users WHERE deslogin = :LOGIN", array(
@@ -67,6 +68,7 @@
 
 			if (count($results) === 0)
 			{
+
 				throw new \Exception("Usuário inexistente ou senha inválida.");
 				
 			}
@@ -75,6 +77,7 @@
 
 			if (password_verify($password, $data["despassword"]) === true)
 			{
+
 				$user = new User();
 
 				$user->setData($data);
@@ -85,19 +88,27 @@
 
 
 			} else {
+
 				throw new \Exception("Usuário inexistente ou senha inválida.");
+
 			}
+
 		}
+
+
 
 		public static function verifyLogin($inadmin = true) // aula 104 - 30min
 		{
-			if (User::checkLogin($inadmin))	{
+
+			if (!User::checkLogin($inadmin))	{
 
 				header("Location: /admin/login"); // se não foi definida, redireciona para a tela de autenticação
 				exit;
 				
 			}
 		}
+
+
 
 		public static function logout()
 		{
