@@ -6,8 +6,8 @@
 
 	class Mailer {
 
-		const USERNAME = "<meuEmail>";
-		const PASSWORD = "<minhaSenhaDeEmail>";
+		const USERNAME = "<<meuEmail>>";
+		const PASSWORD = "<<minhaSenha>>";
 		const NAME_FROM = "Hcode Store";
 
 		private $mail;

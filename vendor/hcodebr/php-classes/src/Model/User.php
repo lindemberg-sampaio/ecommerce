@@ -10,6 +10,7 @@
 
 		const SESSION = "User";
 		const SECRET = "HcodePhp7_Secret"; // tem que ter ao menos 16 caracteres
+		const SECRET_IV = "HcodePhp7_Secret_IV";
 
 		public static function getFromSession()
 		{
@@ -134,7 +135,7 @@
 
 				":desperson"=>$this->getdesperson(),
 				":deslogin"=>$this->getdeslogin(),
-				":despassword"=>$this->getdespassword(),
+				":despassword"=>User::getPasswordHash($this->getdespassword()),
 				":desemail"=>$this->getdesemail(),
 				":nrphone"=>$this->getnrphone(),
 				":inadmin"=>$this->getinadmin()
@@ -167,7 +168,7 @@
 				":iduser"=>$this->getiduser(),
 				":desperson"=>$this->getdesperson(),
 				":deslogin"=>$this->getdeslogin(),
-				":despassword"=>$this->getdespassword(),
+				":despassword"=>User::getPasswordHash($this->getdespassword()),
 				":desemail"=>$this->getdesemail(),
 				":nrphone"=>$this->getnrphone(),
 				":inadmin"=>$this->getinadmin()
@@ -186,16 +187,18 @@
 			));
 		}
 
-		public static function getForgot($email) {
+		public static function getForgot($email, $inadmin = true) {
 
 			$sql = new Sql();
 
 			$results = $sql->select("SELECT *
 									FROM tb_persons a
 									INNER JOIN tb_users b USING(idperson)
-									WHERE a.desemail = :email", array(
+									WHERE a.desemail = :email",
+									array(
 										"email"=>$email
-									));;
+									));
+
 
 			if (count($results) === 0)
 			{
@@ -214,6 +217,7 @@
 
 				if (count($results2) === 0)
 				{
+
 					throw new \Exception("Não foi possível recuperar a senha");
 					
 				}
@@ -221,20 +225,28 @@
 				{
 					$dataRecovery = $results2[0];
 					
-					$code = base64_encode(openssl_encrypt($dataRecovery["idrecovery"], 'AES-128-CBC', User::SESSION, 0, User::SECRET));
+					$code = openssl_encrypt($dataRecovery['idrecovery'], 'AES-128-CBC', pack("a16", User::SECRET), 0, pack("a16", User::SECRET_IV));
+					
+					$code = base64_encode($code);
 
-					$link = "http://www.hcodecommerce.com.br/admin/forgot/reset?code=$code";
+					if ($inadmin === true) {
 
-					$emailer = new Mailer($data["desemail"], $data["desperson"], "Redefinir senha da Hcode Store", "forgot"
-						, array(
-							"name"=>$data["desperson"],
-							"link"=>$link
-					));
+						$link = "http://www.hcodecommerce.com.br/admin/forgot/reset?code=$code";
 
-					$emailer->send();
+					} else {
 
-					return $data;
+						$link = "http://www.hcodecommerce.com.br/forgot/reset?code=$code";
+						
+					}
 
+					$mailer = new Mailer($data['desemail'], $data['desperson'], "Redefinir senha da Hcode Store", "forgot", array(
+						"name"=>$data['desperson'],
+						"link"=>$link
+					));				
+					
+					$mailer->send();
+					
+					return $link;
 
 				}
 			}
@@ -242,9 +254,12 @@
 
 		}
 
-		public static function validForgotDecrypt($code) {
+		public static function validForgotDecrypt($code)
+		{
 
-			$idrecovery = openssl_decrypt(base64_decode($code), 'AES-128-CBC', User::SESSION, 0, User::SECRET);
+			$code = base64_decode($code);
+
+			$idrecovery = openssl_decrypt($code, 'AES-128-CBC', pack("a16", User::SECRET), 0, pack("a16", User::SECRET_IV));
 
 			$sql = new Sql();
 
@@ -254,26 +269,29 @@
 									INNER JOIN tb_users b USING(iduser)
 									INNER JOIN tb_persons c USING(idperson)
 									WHERE
-										a.idrecovery = :idrecovery 
-										AND 
-										a.dtrecovery IS NULL 
-										AND 
-										DATE_ADD(a.dtregister, INTERVAL 1 HOUR) >= NOW()
-										",
-									array(
+										a.idrecovery = :idrecovery
+										AND
+										a.dtrecovery IS NULL
+										AND
+										DATE_ADD(a.dtregister, INTERVAL 1 HOUR) >= NOW();
+									", array(
 										":idrecovery"=>$idrecovery
-			));
+									)
+			);
 
-			if ($results[0] === 0) {
+			if (count($results) === 0)
+			{
 
 				throw new \Exception("Não foi possível recuperar a senha.");
-				
+
 			}
-			else {
+
+			else
+			{
 
 				return $results[0];
-			}
 
+			}
 
 		}
 
@@ -295,6 +313,16 @@
 				":password"=>$password,
 				":iduser"=>$this->getiduser()
 			));
+
+		}
+
+
+		public static function getPasswordHash($password)
+		{
+
+			return password_hash($password, PASSWORD_DEFAULT, [
+				'cost'=>12
+			]);
 
 		}
 
