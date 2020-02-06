@@ -150,7 +150,7 @@
 
 			$results = $sql->SELECT("CALL sp_users_save(:desperson, :deslogin, :despassword, :desemail, :nrphone, :inadmin)", array(
 
-				":desperson"=>$this->utf8_decode(getdesperson()),
+				":desperson"=>utf8_decode($this->getdesperson()),
 				":deslogin"=>$this->getdeslogin(),
 				":despassword"=>User::getPasswordHash($this->getdespassword()),
 				":desemail"=>$this->getdesemail(),
@@ -172,9 +172,11 @@
 				":iduser"=>$iduser
 			));
 
-			$this->setData($results[0]);
+			$data = $results[0];
 
 			$data['desperson'] = utf8_encode($data['desperson']);
+
+			$this->setData($data);
 
 		}
 
@@ -375,6 +377,35 @@
 		{
 
 			$_SESSION[User::ERROR_REGISTER] = $msg;
+
+		}
+
+		public static function getErrorRegister()
+		{
+			$msg = (isset($_SESSION[User::ERROR_REGISTER]) && $_SESSION[User::ERROR_REGISTER]) ? $_SESSION[User::ERROR_REGISTER] : '';
+
+			User::clearErrorRegister();
+
+			return $msg;
+		}
+
+		public static function clearErrorRegister()
+		{
+
+			$_SESSION[User::ERROR_REGISTER] = NULL;
+
+		}
+
+		public static function checkLoginExist($login)
+		{
+
+			$sql = new Sql();
+
+			$results = $sql->select("SELECT * FROM tb_users WHERE deslogin = :deslogin", [
+				':deslogin'=>$login
+			]);
+
+			return (count($results) > 0);
 
 		}
 
