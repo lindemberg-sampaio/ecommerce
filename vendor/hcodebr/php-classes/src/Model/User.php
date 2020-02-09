@@ -187,7 +187,7 @@
 			$results = $sql->SELECT("CALL sp_usersupdate_save(:iduser, :desperson, :deslogin, :despassword, :desemail, :nrphone, :inadmin)", array(
 
 				":iduser"=>$this->getiduser(),
-				":desperson"=>$this->utf8_decode(getdesperson()),
+				":desperson"=>utf8_decode($this->getdesperson()),
 				":deslogin"=>$this->getdeslogin(),
 				":despassword"=>User::getPasswordHash($this->getdespassword()),
 				":desemail"=>$this->getdesemail(),
