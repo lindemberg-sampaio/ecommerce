@@ -199,6 +199,8 @@
 
 			));
 
+			$_SESSION[User::SESSION] = $this->getValues();
+
 		}
 
 		public function delete() {

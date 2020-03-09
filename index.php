@@ -17,7 +17,7 @@
 	require_once("road/admin-categories.php");
 	require_once("road/admin-users.php");
 	require_once("road/admin-products.php");
-
+	require_once("road/admin-orders.php");
 
 
 	$app->run();
