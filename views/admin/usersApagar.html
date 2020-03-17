@@ -44,8 +44,8 @@
                     <th style="width: 140px">&nbsp;</th>
                   </tr>
                 </thead>
-                <tbody>
-                  {loop="$users"}
+                <tbody> <!-- em RainTPL são abertas CHAVES, e dentro delas o comando LOOP recebendo o array que contém os dados !-->
+                  {loop="$users"} 
                   <tr>
                     <td>{$value.iduser}</td>
                     <td>{$value.desperson}</td>
@@ -57,7 +57,7 @@
                       <a href="/admin/users/{$value.iduser}/delete" onclick="return confirm('Deseja realmente excluir este registro?')" class="btn btn-danger btn-xs"><i class="fa fa-trash"></i> Excluir</a>
                     </td>
                   </tr>
-                  {/loop}
+                  {/loop} <!-- encerramento do LOOP!-->
                 </tbody>
               </table>
             </div>

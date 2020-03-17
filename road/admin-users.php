@@ -8,12 +8,41 @@
 
 		User::verifyLogin(); // verifica se o usuário está autenticado, como não está sendo passado nenhum parâmetro, o inadmin por padrão é TRUE e vai verificar se ele é um usuário LOGADO e se TEM ACESSO ao ADMINISTRATIVO
 
-		$users = User::listAll();
+		$search = (isset($_GET['search'])) ? $_GET['search'] : "";
+		$page = (isset($_GET['page'])) ? (int)$_GET['page'] : 1;
+
+
+		if ($search != '') {
+
+			$pagination = User::getPageSearch($search, $page); // se for dado ao usuário definir quantos itens por página, a sentença será $users = User::getPage($page, $quantidadePorPaginaDefinidaPeloUsuario), porém deve tirar do método
+
+		} else {
+
+			$pagination = User::getPage($page);
+
+		}
+
+		$pages = [];
+
+		for ($x = 0; $x < $pagination['pages']; $x++)
+		{
+
+			array_push($pages, [
+				'href'=>'/admin/users?'.http_build_query([
+					'page'=>$x+1,
+					'search'=>$search
+				]),
+				'text'=>$x+1
+			]);
+
+		}
 
 		$page = new PageAdmin();
 
 		$page->setTpl("users", array(
-			"users"=>$users
+			"users"=>$pagination['data'],
+			"search"=>$search,
+			"pages"=>$pages
 		));
 
 	});
